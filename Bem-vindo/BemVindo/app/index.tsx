@@ -40,23 +40,28 @@ export default function Index() {
 
   if (telaAtual === 'home') {
     return (
-      <View style={styles.container}>
+      <View style={styles.containerPosts}>
         <View>
-          <View style={styles.botoesFiltro}>
-            <TouchableOpacity onPress={() => setFiltroAtual('Todos')}>
-              <Text style={ filtroAtual === 'Todos' ? styles.botaoSelecionado : null}>Todos</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => setFiltroAtual('Feminino')}>
-              <Text style={ filtroAtual === 'Feminino' ? styles.botaoSelecionado : null}>Feminino</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => setFiltroAtual('Masculino')}>
-              <Text style={ filtroAtual === 'Masculino' ? styles.botaoSelecionado : null}>Masculino</Text>
-            </TouchableOpacity>
-          </View>
-
           <ScrollView>
+            <View style={styles.botaoVoltar}>
+              <TouchableOpacity >
+                <Text style={styles.botaoTexto} onPress={() => setTelaAtual('bem-vindo')}>Voltar para a tela inicial</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.botoesFiltro}>
+              <TouchableOpacity onPress={() => setFiltroAtual('Todos')}>
+                <Text style={filtroAtual === 'Todos' ? styles.botaoSelecionado : null}>Todos</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setFiltroAtual('Feminino')}>
+                <Text style={filtroAtual === 'Feminino' ? styles.botaoSelecionado : null}>Feminino</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => setFiltroAtual('Masculino')}>
+                <Text style={filtroAtual === 'Masculino' ? styles.botaoSelecionado : null}>Masculino</Text>
+              </TouchableOpacity>
+            </View>
+
             {produtosFiltrados.map((item) => (
               <Itens
                 id={item.id}
@@ -65,11 +70,10 @@ export default function Index() {
                 categoria={item.categoria}
               />
             ))}
-          </ScrollView>
 
-          <TouchableOpacity style={styles.botaoVoltar}>
-            <Text style={styles.botaoTexto} onPress={() => setTelaAtual('bem-vindo')}>Voltar para a tela inicial</Text>
-          </TouchableOpacity>
+
+
+          </ScrollView>
         </View>
       </View>
     )
@@ -98,7 +102,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     justifyContent: "space-evenly",
     alignItems: "center",
-
+  },
+  containerPosts: {
+    flex: 1,
+    padding: 8,
+    gap: 10
   },
   logo: {
     backgroundColor: "#1000f0",
@@ -136,21 +144,25 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   botaoVoltar: {
-    padding: 15,
-    borderRadius: 20,
-    backgroundColor: "#119600",
-    width: "auto",
-    alignItems: "center"
-  },
-  botoesFiltro:{
-    padding: 15,
+    padding: 10,
     backgroundColor: "#00756c",
-    alignItems: "center",
-    flexDirection: "row",
+    alignItems: "flex-end",
+    flexDirection: "column",
     justifyContent: "space-around",
-    borderRadius: 10
+    borderRadius: 10,
+    width: 150,
   },
-  botaoSelecionado:{
+  botoesFiltro: {
+    padding: 10,
+    backgroundColor: "#00756c",
+    alignItems: "flex-start",
+    flexDirection: "column",
+    justifyContent: "space-around",
+    gap: 15,
+    borderRadius: 10,
+    width: 150,
+  },
+  botaoSelecionado: {
     padding: 8,
     backgroundColor: "#dadada80",
     borderRadius: 10,
