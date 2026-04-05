@@ -41,39 +41,42 @@ export default function Index() {
   if (telaAtual === 'home') {
     return (
       <View style={styles.containerPosts}>
-        <View>
-          <ScrollView>
-            <View style={styles.botaoVoltar}>
-              <TouchableOpacity >
-                <Text style={styles.botaoTexto} onPress={() => setTelaAtual('bem-vindo')}>Voltar para a tela inicial</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.botoesFiltro}>
-              <TouchableOpacity onPress={() => setFiltroAtual('Todos')}>
-                <Text style={filtroAtual === 'Todos' ? styles.botaoSelecionado : null}>Todos</Text>
-              </TouchableOpacity>
+        <ScrollView>
 
-              <TouchableOpacity onPress={() => setFiltroAtual('Feminino')}>
-                <Text style={filtroAtual === 'Feminino' ? styles.botaoSelecionado : null}>Feminino</Text>
-              </TouchableOpacity>
+          <View style={styles.botaoVoltar}>
+            <TouchableOpacity >
+              <Text style={styles.botaoTexto} onPress={() => setTelaAtual('bem-vindo')}>Voltar para a tela inicial</Text>
+            </TouchableOpacity>
+          </View>
 
-              <TouchableOpacity onPress={() => setFiltroAtual('Masculino')}>
-                <Text style={filtroAtual === 'Masculino' ? styles.botaoSelecionado : null}>Masculino</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={styles.botoesFiltro}>
+            <TouchableOpacity onPress={() => setFiltroAtual('Todos')}>
+              <Text style={filtroAtual === 'Todos' ? styles.botaoSelecionado : null}>Todos</Text>
+            </TouchableOpacity>
 
-            {produtosFiltrados.map((item) => (
-              <Itens
-                id={item.id}
-                titulo={item.nome}
-                preco={item.preco}
-                categoria={item.categoria}
-              />
-            ))}
+            <TouchableOpacity onPress={() => setFiltroAtual('Feminino')}>
+              <Text style={filtroAtual === 'Feminino' ? styles.botaoSelecionado : null}>Feminino</Text>
+            </TouchableOpacity>
 
+            <TouchableOpacity onPress={() => setFiltroAtual('Masculino')}>
+              <Text style={filtroAtual === 'Masculino' ? styles.botaoSelecionado : null}>Masculino</Text>
+            </TouchableOpacity>
+          </View>
 
+          {produtosFiltrados.map((item) => (
+            <Itens
+              id={item.id}
+              titulo={item.nome}
+              preco={item.preco}
+              categoria={item.categoria}
+            />
+          ))}
 
-          </ScrollView>
+        </ScrollView>
+        <View >
+          <TouchableOpacity style={styles.botaoFAB}>
+            <Text>+</Text>
+          </TouchableOpacity>
         </View>
       </View>
     )
@@ -87,7 +90,7 @@ export default function Index() {
         <Text style={styles.titulo}>Bem Vindo</Text>
         <Text style={styles.subtitulo}>Breve explicação</Text>
       </View>
-      <View>
+      <View style={styles.fabContent}>
         <TouchableOpacity style={styles.botao}>
           <Text style={styles.botaoTexto} onPress={() => setTelaAtual('home')}>Entrar</Text>
         </TouchableOpacity>
@@ -106,7 +109,10 @@ const styles = StyleSheet.create({
   containerPosts: {
     flex: 1,
     padding: 8,
-    gap: 10
+    gap: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+
   },
   logo: {
     backgroundColor: "#1000f0",
@@ -146,26 +152,38 @@ const styles = StyleSheet.create({
   botaoVoltar: {
     padding: 10,
     backgroundColor: "#00756c",
-    alignItems: "flex-end",
-    flexDirection: "column",
-    justifyContent: "space-around",
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 10,
-    width: 150,
+    width: "auto",
+    margin: 10
   },
   botoesFiltro: {
     padding: 10,
     backgroundColor: "#00756c",
-    alignItems: "flex-start",
-    flexDirection: "column",
-    justifyContent: "space-around",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
     gap: 15,
     borderRadius: 10,
-    width: 150,
+    width: "auto",
+    margin: 10
+
   },
   botaoSelecionado: {
     padding: 8,
     backgroundColor: "#dadada80",
     borderRadius: 10,
     fontWeight: "bold"
+  },
+  fabContent: {
+    justifyContent: "flex-end",
+    alignContent: "flex-end",
+    
+  },
+  botaoFAB: {
+    alignItems: "flex-end",
+    backgroundColor: "#1976D2",
+    borderRadius: 100,
   }
 })
