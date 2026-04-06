@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, ScrollView, Image } from "react-native";
 import { Itens } from "@/components/itens"
+import { Stack } from "expo-router";
 
 export default function Index() {
   const [telaAtual, setTelaAtual] = useState('bem-vindo');
@@ -38,9 +39,24 @@ export default function Index() {
     }
   });
 
+  if (telaAtual === 'macaco') {
+    return (
+      <View>
+        <TouchableOpacity onPress={() => setTelaAtual("bem-vindo")}>
+          <Image source={require("./macaco.png")} style={styles.imagemMacaco} />
+        </TouchableOpacity>
+      </View>
+    )
+
+
+  }
+
+
   if (telaAtual === 'home') {
     return (
       <View style={styles.containerPosts}>
+        <Stack.Screen options={{ headerShown: false }} />
+
         <ScrollView>
 
           <View style={styles.botaoVoltar}>
@@ -73,26 +89,30 @@ export default function Index() {
           ))}
 
         </ScrollView>
-        <View >
-          <TouchableOpacity style={styles.botaoFAB}>
-            <Text>+</Text>
-          </TouchableOpacity>
-        </View>
+
+        <TouchableOpacity style={styles.botaoFAB} onPress={() => alert('Abrir carrinho!')}>
+          <Text>+</Text>
+        </TouchableOpacity>
+
       </View>
     )
   }
 
   return (
     <View style={styles.container}>
-
+      <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.descricao}>
         <View style={styles.logo}></View>
         <Text style={styles.titulo}>Bem Vindo</Text>
-        <Text style={styles.subtitulo}>Breve explicação</Text>
+        <Text style={styles.subtitulo}>Aplicativos de compras virtuais eletrônicas tecnológias</Text>
       </View>
-      <View style={styles.fabContent}>
+      <View style={styles.botoesPrincipais}>
         <TouchableOpacity style={styles.botao}>
           <Text style={styles.botaoTexto} onPress={() => setTelaAtual('home')}>Entrar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.botaoSurpresa}>
+          <Text style={styles.botaoTexto} onPress={() => setTelaAtual('macaco')}>Surpresa</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -135,19 +155,32 @@ const styles = StyleSheet.create({
   subtitulo: {
     color: "#6d6d6d",
     fontSize: 20,
+    textAlign: "center"
+  },
+  botoesPrincipais: {
+    justifyContent: "center",
+    alignItems: "center"
   },
   botao: {
     padding: 15,
     borderRadius: 20,
     backgroundColor: "#119600",
     width: 100,
-    alignItems: "center"
+    alignItems: "center",
+    margin: 15
   },
   botaoTexto: {
     fontWeight: "bold",
     fontSize: 15,
     color: "#fff",
     textAlign: "center"
+  },
+  botaoSurpresa: {
+    padding: 15,
+    borderRadius: 20,
+    backgroundColor: "#119600",
+    width: 100,
+    alignItems: "center"
   },
   botaoVoltar: {
     padding: 10,
@@ -176,14 +209,37 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontWeight: "bold"
   },
-  fabContent: {
-    justifyContent: "flex-end",
-    alignContent: "flex-end",
-    
-  },
   botaoFAB: {
-    alignItems: "flex-end",
-    backgroundColor: "#1976D2",
-    borderRadius: 100,
+    // A mágica que tira ele do fluxo normal da tela
+    position: 'absolute',
+
+    // Posicionamento na tela (canto inferior direito)
+    right: 20,
+    bottom: 20,
+
+    // Tamanho do botão
+    width: 60,
+    height: 60,
+
+    // Cor e formato
+    backgroundColor: '#cecece',
+    borderRadius: 30, // Para ficar redondo, o borderRadius deve ser sempre a metade da largura/altura
+
+    // Centralizar o ícone/texto dentro dele
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    // Sombras para dar o efeito de que está "descolado" da tela
+    elevation: 5, // Cria sombra no Android
+    shadowColor: '#000', // Sombra no iOS
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  imagemMacaco: {
+    justifyContent: "center",
+    alignItems: "center",
+    width: "auto",
+    height: 650
   }
 })
