@@ -8,13 +8,15 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-
+import Constants from 'expo-constants'
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
 export default function App() {
   const API_URL = 'https://jsonplaceholder.typicode.com/posts';
   const [listaAPI, setListaAPI] = useState([]);
+  const [listaFiltrada, setListaFiltrada] = useState([]);
+  const [termoBusca, setTermoBusca] = useState('');
   const [loading, setLoading] = useState(false);
   const [idEditando, setIdEditando] = useState(null);
   const [tituloPost, setTituloPost] = useState('');
@@ -28,6 +30,7 @@ export default function App() {
       setLoading(true);
       const response = await axios.get(API_URL);
       setListaAPI(response.data);
+      setListaFiltrada(response.data);
       setLoading(false);
       if (listaAPI === null) {
         Alert.alert('Aviso', 'Lista está vazia');
@@ -36,51 +39,69 @@ export default function App() {
     } catch (error) {
       Alert.alert('Erro', 'Erro ao buscar a lista');
     } finally {
-      Alert.alert('Sucesso', 'A lista foi carregada com sucesso');
+      //Alert.alert('Sucesso', 'A lista foi carregada com sucesso');
     }
   }
 
+  function filtrarBusca(textoDigitado){
+    setTermoBusca(textoDigitado);
 
-  async function deletarPost(itemID){
-    
-    Alert.alert('Atenção', 'Tem certeza que deseja excluir esta postagem?', [{text: "Cancelar", style: "cancel"},{ text: "Excluir", style: "destructive", onPress: async () => {
-         try{
-      setLoading(true);
-      await axios.delete(API_URL + '/' + itemID);
-      setLoading(false)
-    } catch (error){
-      Alert.alert('Erro', "Nao foi possivel deletar o post");
-    } finally {
-      Alert.alert('SUcesso', 'O post foi deletado')
-    }
-
-    }}])
-    
-    
-   
-  }
-
-  function prepararEdicao(item){
-    setIdEditando(item.id);
-    setTituloPost(item.title)
-  }
-
-  async function salvarPost(){
-    if(tituloPost.trim() === ''){
-      Alert.alert('Aviso', 'O campo não pode estar vazio')
+    if(textoDigitado.trim() === ''){
+      setListaFiltrada(listaAPI);
       return;
     }
 
-    try{
-      setLoading(true)
+    const resultados = listaAPI.filter((item) => {
+      const tituloDoItem = item.title.toLowerCase();
+      const textoBuscado = textoDigitado.toLowerCase();
+      return tituloDoItem.includes(textoBuscado);
+    });
+
+    setListaFiltrada(resultados)
+  }
+
+  async function deletarPost(itemID) {
+    Alert.alert('Atenção', 'Tem certeza que deseja excluir esta postagem?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            setLoading(true);
+            await axios.delete(API_URL + '/' + itemID);
+            setLoading(false);
+          } catch (error) {
+            Alert.alert('Erro', 'Nao foi possivel deletar o post');
+          } finally {
+            Alert.alert('SUcesso', 'O post foi deletado');
+          }
+        },
+      },
+    ]);
+  }
+
+  function prepararEdicao(item) {
+    setIdEditando(item.id);
+    setTituloPost(item.title);
+  }
+
+  async function salvarPost() {
+    if (tituloPost.trim() === '') {
+      Alert.alert('Aviso', 'O campo não pode estar vazio');
+      return;
+    }
+
+    try {
+      setLoading(true);
 
       const payload = {
         title: tituloPost,
         body: 'Padrao',
-        userId: 1
-      }
+        userId: 1,
+      };
 
-      if(idEditando){
+      if (idEditando) {
         await axios.put(API_URL + '/' + idEditando, payload);
         Alert.alert('Sucesso', 'Post editado com sucesso');
       } else {
@@ -91,52 +112,62 @@ export default function App() {
       setTituloPost('');
       setIdEditando(null);
     } catch (error) {
-      Alert.alert('Erro', 'Erro ao salvar os dados')
+      Alert.alert('Erro', 'Erro ao salvar os dados');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-
   }
 
   return (
     <View style={styles.container}>
-
-      <View>
+      <View style={styles.formulario}>
         <Text>Formulario</Text>
         <TextInput
           value={tituloPost}
           onChangeText={setTituloPost}
-          placeholder='Digite um titulo novo ou selecione um post para edição'
+          placeholder="Digite um titulo novo ou selecione um post para edição"
         />
+        <View>
+          <TextInput
+            value={termoBusca}
+            onChangeText={filtrarBusca}
+            placeholder="Buscar por titulo"
+          />
+        </View>
 
-        <TouchableOpacity onPress={() => salvarPost()}>
-          <Text>SALVAR</Text>
+        <TouchableOpacity style={styles.botaoSalvar} onPress={() => salvarPost()}>
+          <Text style={styles.textoBotao}>SALVAR</Text>
         </TouchableOpacity>
       </View>
-
-      {loading ? (
-        <ActivityIndicator />
-      ) : (
-        <FlatList
-          data={listaAPI}
-          renderItem={({ item }) => {
-            return (
-              <View>
-                <Text> ------------ </Text>
-                <Text>ID: {item.id}</Text>
-                <Text>Titulo: {item.title} </Text>
-                <TouchableOpacity onPress={() => deletarPost(item.id)}>
-                  <Text>DELETAR</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={()=> prepararEdicao(item)}>
-                  <Text>EDITAR</Text>
-                </TouchableOpacity>
-              </View>
-            );
-          }}
-          keyExtractor={(item) => item.id}
-        />
-      )}
+      <View style={styles.lista}>
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
+          <FlatList
+            data={listaFiltrada}
+            renderItem={({ item }) => {
+              return (
+                <View style={styles.componenteLista}>
+                  <Text>ID: {item.id} </Text>
+                  <Text>Titulo: {item.title} </Text>
+                  <View style={styles.botoes}>
+                    <TouchableOpacity style={styles.botaoDelete} onPress={() => deletarPost(item.id)}>
+                      <Text style={styles.textoBotao}>DELETAR</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.botaoEditar} onPress={() => prepararEdicao(item)}>
+                      <Text style={styles.textoBotao}>EDITAR</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            }}
+            keyExtractor={(item) => item.id}
+            ListEMptyComponent={
+              <Text>Nenhuma postagem encontrada</Text>
+            }
+          />
+        )}
+      </View>
     </View>
   );
 }
@@ -144,9 +175,40 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#ecf0f1',
-    padding: 8,
-    paddingTop: 35,
+    paddingTop: Constants.statusBarHeight,
   },
+  componenteLista: {
+    padding: 8,
+  },
+  formulario: {
+    backgroundColor: 'blue',
+  },
+  lista: {
+    backgroundColor: 'gray',
+    padding: 10,
+  },
+  botoes:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10
+  },
+  botaoDelete:{
+    backgroundColor: 'red',
+    padding: 8,
+    borderRadius: 10
+  },
+  botaoEditar:{
+    backgroundColor: 'orange',
+    padding: 8,
+    borderRadius: 10,
+  },
+  textoBotao:{
+    fontWeight: 'bold'
+  },
+  botaoSalvar:{
+    backgroundColor: 'green',
+    padding: 8,
+    borderRadius: 10,
+    alignSelf: 'flex-start'
+  }
 });
